@@ -29,6 +29,9 @@ fun App() {
     var isOptimize by remember { mutableStateOf(false) }
     var isStructurize by remember { mutableStateOf(false) }
     var isTranslate by remember { mutableStateOf(false) }
+    var isFix by remember { mutableStateOf(false) }
+    var isDoc by remember { mutableStateOf(false) }
+    var isComment by remember { mutableStateOf(false) }
 
     MaterialTheme {
         Surface(
@@ -135,6 +138,24 @@ fun App() {
                         onCheckedChange = { isTranslate = it }
                     )
 
+                    CheckBoxWithText(
+                        text = "Fix",
+                        isChecked = isFix,
+                        onCheckedChange = { isFix = it }
+                    )
+
+                    CheckBoxWithText(
+                        text = "Doc",
+                        isChecked = isDoc,
+                        onCheckedChange = { isDoc = it }
+                    )
+
+                    CheckBoxWithText(
+                        text = "Comment",
+                        isChecked = isComment,
+                        onCheckedChange = { isComment = it }
+                    )
+
                     Button(
                         onClick = { },
                         modifier = Modifier.fillMaxWidth()
@@ -151,7 +172,8 @@ fun App() {
                         value = if (isTranslate) targetLang else sourceLang,
                         textStyle = TextStyle(fontSize = 14.sp),
                         onValueChange = {
-                            if (isTranslate) targetLang = it else sourceLang = it
+                            isTranslate = true
+                            targetLang = it
                         },
                         visualTransformation = VisualTransformation.None,
 
@@ -266,7 +288,7 @@ private fun Settings() {
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Gpt code improver",
+        title = "GptCodeTools",
         resizable = true,
         state = rememberWindowState(
             width = 1300.dp,
