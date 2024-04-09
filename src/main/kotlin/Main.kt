@@ -151,7 +151,7 @@ fun App() {
                         value = if (isTranslate) targetLang else sourceLang,
                         textStyle = TextStyle(fontSize = 14.sp),
                         onValueChange = {
-                            if (isTranslate) targetLang = it
+                            if (isTranslate) targetLang = it else sourceLang = it
                         },
                         visualTransformation = VisualTransformation.None,
 
