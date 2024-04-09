@@ -6,8 +6,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
@@ -20,9 +22,13 @@ import java.awt.datatransfer.StringSelection
 fun App() {
     var textUser by remember { mutableStateOf("") }
     var textGpt by remember { mutableStateOf("") }
+    var sourceLang by remember { mutableStateOf("") }
+    var targetLang by remember { mutableStateOf("") }
+
     var isSimplify by remember { mutableStateOf(false) }
     var isOptimize by remember { mutableStateOf(false) }
     var isStructurize by remember { mutableStateOf(false) }
+    var isTranslate by remember { mutableStateOf(false) }
 
     MaterialTheme {
         Surface(
@@ -32,15 +38,34 @@ fun App() {
                 modifier = Modifier.padding(16.dp).fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                CodeField(
-                    text = textUser,
-                    onValueChange = { textUser = it },
-                    label = "Your code",
-                    modifier = Modifier.weight(1f).fillMaxHeight()
-                )
+                Column(
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OutlinedTextField(
+                        value = sourceLang,
+                        textStyle = TextStyle(fontSize = 14.sp),
+                        onValueChange = { sourceLang = it },
+                        visualTransformation = VisualTransformation.None,
+
+                        label = {
+                            Text(
+                                "Source language",
+                                style = TextStyle(fontSize = 13.sp)
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth().height(55.dp)
+                    )
+
+                    CodeField(
+                        text = textUser,
+                        onValueChange = { textUser = it },
+                        label = "Your code",
+                    )
+                }
 
                 Column(
-                    modifier = Modifier.width(140.dp),
+                    modifier = Modifier.width(150.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -64,20 +89,26 @@ fun App() {
 
                     Button(
                         onClick = {
+                            textUser = textGpt
+                            textGpt = ""
+                            if (isTranslate) {
+                                sourceLang = targetLang
+                                targetLang = ""
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("<----")
+                    }
+
+                    Button(
+                        onClick = {
                             textGpt = ""
                             textUser = ""
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Clear")
-                    }
-
-                    // open settings window
-                    Button(
-                        onClick = { },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Settings")
                     }
 
                     CheckBoxWithText(
@@ -97,14 +128,52 @@ fun App() {
                         isChecked = isStructurize,
                         onCheckedChange = { isStructurize = it }
                     )
+
+                    CheckBoxWithText(
+                        text = "Translate",
+                        isChecked = isTranslate,
+                        onCheckedChange = { isTranslate = it }
+                    )
+
+                    Button(
+                        onClick = { },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Settings")
+                    }
+
+                }
+                Column(
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OutlinedTextField(
+                        value = if (isTranslate) targetLang else sourceLang,
+                        textStyle = TextStyle(fontSize = 14.sp),
+                        onValueChange = {
+                            if (isTranslate) targetLang = it
+                        },
+                        visualTransformation = VisualTransformation.None,
+
+                        label = {
+                            Text(
+                                "Target language",
+                                style = TextStyle(fontSize = 13.sp)
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth().height(55.dp)
+                    )
+
+
+                    CodeField(
+                        text = textGpt,
+                        onValueChange = {},
+                        label = "Processed code",
+                        modifier = Modifier.weight(1f).fillMaxHeight()
+                    )
                 }
 
-                CodeField(
-                    text = textGpt,
-                    onValueChange = {},
-                    label = "Processed code",
-                    modifier = Modifier.weight(1f).fillMaxHeight()
-                )
+
             }
         }
     }
@@ -124,11 +193,14 @@ private fun CodeField(
     ) {
         TextField(
             value = text,
+            textStyle = TextStyle(fontSize = 14.sp),
             onValueChange = {
                 characterCount = it.length
                 onValueChange(it)
             },
-            label = { Text(label) },
+            label = {
+                Text(label)
+            },
             modifier = Modifier.fillMaxWidth().weight(1f).fillMaxHeight()
         )
 
@@ -136,7 +208,6 @@ private fun CodeField(
             text = "$characterCount",
             textAlign = TextAlign.Right,
             style = TextStyle(color = Color.Gray),
-            // place text on the right border of textfield
             modifier = Modifier.fillMaxWidth()
         )
     }
