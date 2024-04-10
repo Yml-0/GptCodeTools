@@ -1,4 +1,3 @@
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -18,7 +17,6 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
 @Composable
-@Preview
 fun App() {
     var textUser by remember { mutableStateOf("") }
     var textGpt by remember { mutableStateOf("") }
@@ -32,6 +30,8 @@ fun App() {
     var isFix by remember { mutableStateOf(false) }
     var isDoc by remember { mutableStateOf(false) }
     var isComment by remember { mutableStateOf(false) }
+
+    val settingsWindow = remember { mutableStateOf(false) } // Moved settingsWindow here
 
     MaterialTheme {
         Surface(
@@ -157,7 +157,7 @@ fun App() {
                     )
 
                     Button(
-                        onClick = { },
+                        onClick = { settingsWindow.value = true },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Settings")
@@ -194,9 +194,23 @@ fun App() {
                         modifier = Modifier.weight(1f).fillMaxHeight()
                     )
                 }
-
-
             }
+        }
+    }
+
+    // Settings Window
+    if (settingsWindow.value) {
+        Window(
+            onCloseRequest = { settingsWindow.value = false },
+            title = "Settings",
+            resizable = false,
+            state = rememberWindowState(
+                width = 400.dp,
+                height = 200.dp,
+                position = WindowPosition.Aligned(Alignment.Center)
+            ),
+        ) {
+            Settings()
         }
     }
 }
@@ -261,17 +275,22 @@ private fun CheckBoxWithText(
 
 @Composable
 private fun Settings() {
-    var apiKey by remember { mutableStateOf("API key") }
+    var apiKey by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier.padding(16.dp).fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        TextField(
+        OutlinedTextField(
+            textStyle = TextStyle(fontSize = 14.sp),
             value = apiKey,
             onValueChange = { apiKey = it },
-            label = { Text("API key") },
-            modifier = Modifier.fillMaxWidth()
+            visualTransformation = VisualTransformation.None,
+            label = {
+                Text("API key")
+                TextStyle(fontSize = 13.sp)
+            },
+            modifier = Modifier.fillMaxWidth().height(55.dp)
         )
 
         Button(
@@ -282,8 +301,6 @@ private fun Settings() {
         }
     }
 }
-
-//todo add counter of tokens and of price
 
 fun main() = application {
     Window(
