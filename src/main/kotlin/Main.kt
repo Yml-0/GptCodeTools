@@ -63,25 +63,24 @@ fun App() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Button(
+                    ButtonText(
+                        text = "Process",
                         onClick = { textGpt = textUser },
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Process")
-                    }
+                    )
 
-                    Button(
+                    ButtonText(
+                        text = "Copy result",
                         onClick = {
                             val stringSelection = StringSelection(textGpt)
                             val clipboard = Toolkit.getDefaultToolkit().systemClipboard
                             clipboard.setContents(stringSelection, null)
                         },
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Copy result")
-                    }
+                    )
 
-                    Button(
+                    ButtonText(
+                        text = "<----",
                         onClick = {
                             textUser = textGpt
                             textGpt = ""
@@ -91,19 +90,17 @@ fun App() {
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("<----")
-                    }
+                    )
 
-                    Button(
+
+                    ButtonText(
+                        text = "Clear all",
                         onClick = {
                             textGpt = ""
                             textUser = ""
                         },
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Clear")
-                    }
+                    )
 
                     CheckBoxWithText(
                         text = "Simplify",
@@ -147,12 +144,12 @@ fun App() {
                         onCheckedChange = { isComment = it }
                     )
 
-                    Button(
+                    ButtonText(
+                        text = "Settings",
                         onClick = { settingsWindow.value = true },
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Settings")
-                    }
+                    )
+
 
                 }
                 Column(
@@ -276,10 +273,25 @@ private fun CheckBoxWithText(
     }
 }
 
+@Composable
+private fun ButtonText(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Text(text)
+    }
+}
+
 
 @Composable
 private fun Settings() {
     var apiKey by remember { mutableStateOf("") }
+    var defaultSourceLang by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier.padding(16.dp).fillMaxSize(),
@@ -289,6 +301,12 @@ private fun Settings() {
             text = apiKey,
             onValueChange = { apiKey = it },
             label = "Api key"
+        )
+
+        ParamField(
+            text = defaultSourceLang,
+            onValueChange = { defaultSourceLang = it },
+            label = "Default source language"
         )
 
         Button(
