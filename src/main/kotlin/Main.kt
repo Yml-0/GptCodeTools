@@ -45,19 +45,10 @@ fun App() {
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    OutlinedTextField(
-                        value = sourceLang,
-                        textStyle = TextStyle(fontSize = 14.sp),
+                    ParamField(
+                        text = sourceLang,
                         onValueChange = { sourceLang = it },
-                        visualTransformation = VisualTransformation.None,
-
-                        label = {
-                            Text(
-                                "Source language",
-                                style = TextStyle(fontSize = 13.sp)
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth().height(55.dp)
+                        label = "Source language"
                     )
 
                     CodeField(
@@ -168,22 +159,13 @@ fun App() {
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    OutlinedTextField(
-                        value = if (isTranslate) targetLang else sourceLang,
-                        textStyle = TextStyle(fontSize = 14.sp),
+                    ParamField(
+                        text = if (isTranslate) targetLang else sourceLang,
                         onValueChange = {
                             isTranslate = true
                             targetLang = it
                         },
-                        visualTransformation = VisualTransformation.None,
-
-                        label = {
-                            Text(
-                                "Target language",
-                                style = TextStyle(fontSize = 13.sp)
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth().height(55.dp)
+                        label = "Target language"
                     )
 
 
@@ -205,8 +187,8 @@ fun App() {
             title = "Settings",
             resizable = false,
             state = rememberWindowState(
-                width = 400.dp,
-                height = 200.dp,
+                width = 600.dp,
+                height = 400.dp,
                 position = WindowPosition.Aligned(Alignment.Center)
             ),
         ) {
@@ -249,6 +231,28 @@ private fun CodeField(
     }
 }
 
+@Composable
+private fun ParamField(
+    text: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+) {
+    OutlinedTextField(
+        value = text,
+        textStyle = TextStyle(fontSize = 14.sp),
+        onValueChange = onValueChange,
+        visualTransformation = VisualTransformation.None,
+
+        label = {
+            Text(
+                label,
+                style = TextStyle(fontSize = 13.sp)
+            )
+        },
+        modifier = Modifier.fillMaxWidth().height(55.dp)
+    )
+}
+
 
 @Composable
 private fun CheckBoxWithText(
@@ -281,16 +285,10 @@ private fun Settings() {
         modifier = Modifier.padding(16.dp).fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        OutlinedTextField(
-            textStyle = TextStyle(fontSize = 14.sp),
-            value = apiKey,
+        ParamField(
+            text = apiKey,
             onValueChange = { apiKey = it },
-            visualTransformation = VisualTransformation.None,
-            label = {
-                Text("API key")
-                TextStyle(fontSize = 13.sp)
-            },
-            modifier = Modifier.fillMaxWidth().height(55.dp)
+            label = "Api key"
         )
 
         Button(
