@@ -18,8 +18,8 @@ import java.awt.datatransfer.StringSelection
 
 @Composable
 fun App() {
-    var textUser by remember { mutableStateOf("") }
-    var textGpt by remember { mutableStateOf("") }
+    var sourceCode by remember { mutableStateOf("") }
+    var targetCode by remember { mutableStateOf("") }
     var sourceLang by remember { mutableStateOf("") }
     var targetLang by remember { mutableStateOf("") }
 
@@ -31,7 +31,7 @@ fun App() {
     var isDoc by remember { mutableStateOf(false) }
     var isComment by remember { mutableStateOf(false) }
 
-    val settingsWindow = remember { mutableStateOf(false) } // Moved settingsWindow here
+    val settingsWindowState = remember { mutableStateOf(false) }
 
     MaterialTheme {
         Surface(
@@ -52,8 +52,8 @@ fun App() {
                     )
 
                     CodeField(
-                        text = textUser,
-                        onValueChange = { textUser = it },
+                        text = sourceCode,
+                        onValueChange = { sourceCode = it },
                         label = "Your code",
                     )
                 }
@@ -65,14 +65,14 @@ fun App() {
                 ) {
                     ButtonText(
                         text = "Process",
-                        onClick = { textGpt = textUser },
+                        onClick = { targetCode = sourceCode },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     ButtonText(
                         text = "Copy result",
                         onClick = {
-                            val stringSelection = StringSelection(textGpt)
+                            val stringSelection = StringSelection(targetCode)
                             val clipboard = Toolkit.getDefaultToolkit().systemClipboard
                             clipboard.setContents(stringSelection, null)
                         },
@@ -82,8 +82,8 @@ fun App() {
                     ButtonText(
                         text = "<----",
                         onClick = {
-                            textUser = textGpt
-                            textGpt = ""
+                            if (targetCode.isNotEmpty()) sourceCode = targetCode
+                            targetCode = ""
                             if (isTranslate) {
                                 sourceLang = targetLang
                                 targetLang = ""
@@ -96,8 +96,8 @@ fun App() {
                     ButtonText(
                         text = "Clear all",
                         onClick = {
-                            textGpt = ""
-                            textUser = ""
+                            targetCode = ""
+                            sourceCode = ""
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -123,7 +123,10 @@ fun App() {
                     CheckBoxWithText(
                         text = "Translate",
                         isChecked = isTranslate,
-                        onCheckedChange = { isTranslate = it }
+                        onCheckedChange = {
+                            targetLang = ""
+                            isTranslate = it
+                        }
                     )
 
                     CheckBoxWithText(
@@ -144,10 +147,12 @@ fun App() {
                         onCheckedChange = { isComment = it }
                     )
 
+                    Spacer(modifier = Modifier.weight(1f))
+
                     ButtonText(
                         text = "Settings",
-                        onClick = { settingsWindow.value = true },
-                        modifier = Modifier.fillMaxWidth()
+                        onClick = { settingsWindowState.value = !settingsWindowState.value },
+                        modifier = Modifier.fillMaxWidth().align(Alignment.End)
                     )
 
 
@@ -167,7 +172,7 @@ fun App() {
 
 
                     CodeField(
-                        text = textGpt,
+                        text = targetCode,
                         onValueChange = {},
                         label = "Processed code",
                         modifier = Modifier.weight(1f).fillMaxHeight()
@@ -178,9 +183,9 @@ fun App() {
     }
 
     // Settings Window
-    if (settingsWindow.value) {
+    if (settingsWindowState.value) {
         Window(
-            onCloseRequest = { settingsWindow.value = false },
+            onCloseRequest = { settingsWindowState.value = false },
             title = "Settings",
             resizable = false,
             state = rememberWindowState(
@@ -208,7 +213,7 @@ private fun CodeField(
     ) {
         TextField(
             value = text,
-            textStyle = TextStyle(fontSize = 14.sp),
+            textStyle = TextStyle(fontSize = 12.sp),
             onValueChange = {
                 characterCount = it.length
                 onValueChange(it)
@@ -306,17 +311,19 @@ private fun Settings() {
         ParamField(
             text = defaultSourceLang,
             onValueChange = { defaultSourceLang = it },
-            label = "Default source language"
+            label = "Default code language"
         )
 
-        Button(
+        Spacer(modifier = Modifier.weight(1f)) // Добавляем разделитель
+
+        ButtonText(
+            text = "Save",
             onClick = { },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Save")
-        }
+            modifier = Modifier.fillMaxWidth().align(Alignment.End) // Помещаем кнопку внизу
+        )
     }
 }
+
 
 fun main() = application {
     Window(
