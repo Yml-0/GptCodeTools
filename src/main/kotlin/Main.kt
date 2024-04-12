@@ -19,7 +19,7 @@ import java.awt.datatransfer.StringSelection
 @Composable
 fun App() {
     var sourceCode by remember { mutableStateOf("") }
-    var targetCode by remember { mutableStateOf("") }
+    var resultCode by remember { mutableStateOf("") }
     var sourceLang by remember { mutableStateOf("") }
     var targetLang by remember { mutableStateOf("") }
 
@@ -65,14 +65,14 @@ fun App() {
                 ) {
                     ButtonText(
                         text = "Process",
-                        onClick = { targetCode = sourceCode },
+                        onClick = { resultCode = sourceCode },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     ButtonText(
                         text = "Copy result",
                         onClick = {
-                            val stringSelection = StringSelection(targetCode)
+                            val stringSelection = StringSelection(resultCode)
                             val clipboard = Toolkit.getDefaultToolkit().systemClipboard
                             clipboard.setContents(stringSelection, null)
                         },
@@ -82,8 +82,8 @@ fun App() {
                     ButtonText(
                         text = "<----",
                         onClick = {
-                            if (targetCode.isNotEmpty()) sourceCode = targetCode
-                            targetCode = ""
+                            if (resultCode.isNotEmpty()) sourceCode = resultCode
+                            resultCode = ""
                             if (isTranslate) {
                                 sourceLang = targetLang
                                 targetLang = ""
@@ -96,7 +96,7 @@ fun App() {
                     ButtonText(
                         text = "Clear all",
                         onClick = {
-                            targetCode = ""
+                            resultCode = ""
                             sourceCode = ""
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -172,7 +172,7 @@ fun App() {
 
 
                     CodeField(
-                        text = targetCode,
+                        text = resultCode,
                         onValueChange = {},
                         label = "Processed code",
                         modifier = Modifier.weight(1f).fillMaxHeight()
