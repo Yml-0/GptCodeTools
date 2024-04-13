@@ -13,6 +13,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import processor.CodeProcessor
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
@@ -32,6 +33,8 @@ fun App() {
     var isComment by remember { mutableStateOf(false) }
 
     val settingsWindowState = remember { mutableStateOf(false) }
+
+    val codeProcessor = CodeProcessor()
 
     MaterialTheme {
         Surface(
@@ -65,7 +68,7 @@ fun App() {
                 ) {
                     ButtonText(
                         text = "Process",
-                        onClick = { resultCode = sourceCode },
+                        onClick = { resultCode = codeProcessor.processCode(sourceCode) },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -198,6 +201,7 @@ fun App() {
         }
     }
 }
+
 
 @Composable
 private fun CodeField(

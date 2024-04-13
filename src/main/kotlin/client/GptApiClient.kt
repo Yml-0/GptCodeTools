@@ -1,8 +1,11 @@
+package client
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.concurrent.TimeUnit
 
 class GptApiClient(
     private val apiKey: String,
@@ -14,7 +17,9 @@ class GptApiClient(
 ) {
     private val objectMapper = ObjectMapper()
     private val client = OkHttpClient.Builder()
-        .callTimeout(responseTimeoutMinutes, java.util.concurrent.TimeUnit.MINUTES)
+        .connectTimeout(0, TimeUnit.MILLISECONDS) // Disable connect timeout
+        .readTimeout(0, TimeUnit.MILLISECONDS) // Disable read timeout
+        .writeTimeout(0, TimeUnit.MILLISECONDS) // Disable write timeout
         .build()
 
     fun request(prompt: String): String {
